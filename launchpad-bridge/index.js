@@ -17,6 +17,7 @@
 //         node index.js --debug    also log raw MIDI input
 
 import fs from 'node:fs';
+import net from 'node:net';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
@@ -410,6 +411,19 @@ if (process.argv.includes('--list')) {
   process.exit(0);
 }
 
+// Single instance: hold a localhost port for as long as we run (released automatically on exit/crash).
+const INSTANCE_PORT = 47291;
+await new Promise((resolve) => {
+  const lock = net.createServer();
+  lock.once('error', (err) => {
+    if (err.code !== 'EADDRINUSE') return resolve(); // don't block startup on unrelated errors
+    console.error('Launchpad bridge is already running in another window.');
+    process.exit(1);
+  });
+  lock.listen(INSTANCE_PORT, '127.0.0.1', resolve);
+  lock.unref();
+});
+
 lp = openLaunchpad((row, col) => {
   if (DEBUG) console.log(`Pad row ${row} col ${col}`);
   onPress(row, col).catch((err) => console.error(err));
@@ -425,5 +439,6 @@ function shutdown() {
 }
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
+process.on('SIGHUP', shutdown); // console window closed (Windows)
 
-console.log('Launchpad bridge running. Ctrl+C to quit.');
+console.log('Launchpad bridge running. Close this window or press Ctrl+C to quit.');
