@@ -1,0 +1,16 @@
+services:
+  spx-gc:
+    build: .
+    image: spx-gc:local
+    container_name: spx-gc
+    restart: unless-stopped
+    ports:
+      - "5656:5656"       # SPX web UI / renderer
+      # - "57121:57121/udp" # OSC (enable in config.json first)
+    volumes:
+      - ./config:/app/config     # config.json (generated with defaults on first run)
+      - ./DATAROOT:/app/DATAROOT # projects & rundowns
+      - ./ASSETS:/app/ASSETS     # templates, media, plugins, csv/excel
+      - ./LOG:/app/LOG           # log files
+    environment:
+      - TZ=Etc/UTC

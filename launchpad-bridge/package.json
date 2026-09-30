@@ -1,0 +1,17 @@
+{
+  "name": "launchpad-bridge",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Novation Launchpad Mini -> OBS (obs-websocket) + SPX-GC (HTTP API)",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "list": "node index.js --list",
+    "debug": "node index.js --debug"
+  },
+  "dependencies": {
+    "@julusian/midi": "^3.8.1",
+    "obs-websocket-js": "^5.0.8"
+  }
+}
