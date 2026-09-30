@@ -301,18 +301,19 @@ let lp;
 
 function render() {
   if (!lp) return;
-  // Both scene rows show the same tally: red = program, green = preview.
-  const sceneColor = (name) =>
+  // Preview row shows the full tally (red = program, green = preview);
+  // Program row only shows the live scene.
+  const sceneColor = (name, showPreview) =>
     !name ? COLORS.missing
       : name === currentScene ? COLORS.programActive
-      : name === currentPreview ? COLORS.previewActive
+      : showPreview && name === currentPreview ? COLORS.previewActive
       : COLORS.sceneIdle;
   LAYOUT.preview.cols.forEach((col, i) => {
     // Preview row is dark when Studio mode is off.
-    lp.led(LAYOUT.preview.row, col, sceneColor(obsConnected && studioMode ? scenes[i] : undefined));
+    lp.led(LAYOUT.preview.row, col, sceneColor(obsConnected && studioMode ? scenes[i] : undefined, true));
   });
   LAYOUT.program.cols.forEach((col, i) => {
-    lp.led(LAYOUT.program.row, col, sceneColor(obsConnected ? scenes[i] : undefined));
+    lp.led(LAYOUT.program.row, col, sceneColor(obsConnected ? scenes[i] : undefined, false));
   });
   LAYOUT.transitions.cols.forEach((col, i) => {
     const name = obsConnected && studioMode ? transitions[i] : undefined;
